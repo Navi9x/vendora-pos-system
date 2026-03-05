@@ -1,0 +1,663 @@
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ===== SCSS Variables ===== */
+$sidebar-width: 420px;
+$sidebar-width-mobile: 100%;
+
+// Colors matching previous sidebar
+$sidebar-bg: #ffffff;
+$header-bg: #2563eb;
+$active-bg: #2563eb;
+$hover-bg: #f1f5f9;
+$footer-bg: #f8fafc;
+$border-color: #e2e8f0;
+$content-bg: #f8fafc;
+
+// Text Colors
+$text-primary: #1e293b;
+$text-secondary: #475569;
+$text-white: #ffffff;
+
+// Icon Colors
+$icon-default: #64748b;
+$icon-accent: #2563eb;
+
+// Scrollbar Colors
+$scrollbar-thumb: #cbd5e1;
+$scrollbar-thumb-hover: #94a3b8;
+
+// Transitions
+$transition-speed: 0.2s;
+$transition-timing: ease;
+
+/* ===== Mixins ===== */
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+}
+
+@mixin text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $scrollbar-thumb;
+    border-radius: 3px;
+
+    &:hover {
+      background: $scrollbar-thumb-hover;
+    }
+  }
+}
+
+/* ===== Global Styles ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ===== POS Container ===== */
+.pos-container {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: $content-bg;
+  overflow: hidden;
+}
+
+/* ===== Header ===== */
+.pos-header {
+  @include flex-center;
+  justify-content: space-between;
+  padding: 1.25rem 2rem;
+  background: $header-bg;
+  color: $text-white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  flex-shrink: 0;
+
+  .header-left {
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+
+    .invoice-number {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+  }
+
+  .header-right {
+    @include flex-center;
+    gap: 1.5rem;
+
+    .date-time,
+    .cashier-info {
+      font-size: 0.9rem;
+      opacity: 0.95;
+    }
+
+    .cart-toggle-btn {
+      color: $text-white;
+
+      ::ng-deep .mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+}
+
+/* ===== Main Container ===== */
+.pos-main-container {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    height: calc(100vh);  // ← Ensure it takes full viewport height
+}
+
+
+/* ===== Products Content ===== */
+.products-content {
+  height: 100%;
+  overflow: hidden;
+}
+
+.products-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: $content-bg;
+}
+
+/* ===== Panel Header ===== */
+.panel-header {
+  padding: 1.5rem;
+  background-color: $text-white;
+  border-bottom: 1px solid $border-color;
+  flex-shrink: 0;
+
+  h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: $text-primary;
+    font-weight: 600;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+}
+
+/* ===== Category Tabs ===== */
+.category-tabs {
+  padding: 1rem 1.5rem;
+  background-color: $text-white;
+  border-bottom: 1px solid $border-color;
+  flex-shrink: 0;
+}
+
+/* ===== Products Grid ===== */
+.products-grid {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  align-content: start;
+}
+
+.product-card {
+  cursor: pointer;
+  transition: all 0.3s;
+  border-radius: 12px;
+  overflow-y: auto; /* ← This allows scrolling */
+  overflow-x: hidden;
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.2);
+  }
+
+  &:active {
+    transform: translateY(-2px);
+  }
+
+  .product-image {
+    width: 100%;
+    height: 140px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .product-info {
+    padding: 0.75rem !important;
+
+    h3 {
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      color: $text-primary;
+      font-weight: 600;
+    }
+
+    .product-price {
+      font-size: 1.1rem;
+      color: $header-bg;
+      font-weight: 700;
+      margin: 0;
+    }
+  }
+}
+
+/* ===== Right Cart Drawer ===== */
+::ng-deep .mat-drawer-container {
+  background-color: $content-bg !important;
+}
+
+::ng-deep .mat-drawer.cart-drawer {
+  width: $sidebar-width;
+  background: $sidebar-bg;
+  border-left: 1px solid $border-color;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
+}
+
+.cart-panel {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+  height: 100%;
+  overflow-y: auto; /* ← This allows scrolling */
+  overflow-x: hidden;
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* ===== Cart Header ===== */
+.cart-header {
+  @include flex-center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  background: $header-bg;
+  color: $text-white;
+  flex-shrink: 0;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .close-btn {
+    color: $text-white;
+  }
+}
+
+/* ===== Order Info Section ===== */
+.order-info-section {
+  padding: 1.5rem;
+  background-color: $text-white;
+  border-bottom: 1px solid $border-color;
+  flex-shrink: 0;
+
+  ::ng-deep .mat-mdc-form-field {
+    width: 100%;
+    display: block;
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      background-color: $text-white;
+    }
+
+    .mdc-text-field--filled {
+      background-color: transparent;
+    }
+  }
+}
+
+/* ===== Cart Items Section ===== */
+.cart-items-section {
+  flex-shrink: 0;        // ← Don't let it collapse
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid $border-color;
+  // Remove: flex: 1, overflow: hidden, min-height: 0
+
+  h3 {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    background-color: $footer-bg;
+    border-bottom: 1px solid $border-color;
+    margin: 0;
+    font-weight: 600;
+    color: $text-primary;
+    flex-shrink: 0;
+  }
+
+  .cart-items {
+    padding: 1rem 1.5rem;
+    max-height: 300px;   // ← Fixed height with scroll
+    overflow-y: auto;
+    @include custom-scrollbar;
+  }
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background-color: $footer-bg;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  flex-wrap: nowrap;     // ← Keep on one line
+
+  .item-details {
+    flex: 1;
+    min-width: 0;        // ← Allow text to shrink
+
+    h4 {
+      font-size: 0.85rem;  // ← Slightly smaller to fit
+      margin-bottom: 0.25rem;
+      color: $text-primary;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-price {
+      font-size: 0.8rem;
+      color: #777;
+      margin: 0;
+    }
+  }
+
+  .item-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;      // ← Don't compress buttons
+
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+    }
+
+    .quantity {
+      font-weight: 600;
+      font-size: 0.9rem;
+      min-width: 24px;
+      text-align: center;
+    }
+  }
+
+  .item-total {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+
+    span {
+      font-weight: 700;
+      color: $header-bg;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+/* ===== Pricing Section ===== */
+.pricing-section {
+  padding: 1.5rem;
+  background-color: $text-white;
+  flex-shrink: 0;
+  border-bottom: 1px solid $border-color;
+
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    > span:first-child {
+      color: $text-secondary;
+      font-weight: 500;
+    }
+
+    > span:last-child {
+      color: $text-primary;
+      font-weight: 600;
+    }
+
+    &.editable {
+      ::ng-deep .mat-mdc-form-field {
+        width: 120px;
+        margin: 0;
+
+        .mat-mdc-text-field-wrapper {
+          padding: 0;
+        }
+
+        .mat-mdc-form-field-subscript-wrapper {
+          display: none;
+        }
+
+        input {
+          text-align: right;
+          font-weight: 600;
+        }
+      }
+    }
+
+    &.total {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid $border-color;
+      font-size: 1.35rem;
+      font-weight: 700;
+
+      > span {
+        color: $header-bg;
+      }
+    }
+  }
+
+  ::ng-deep mat-divider {
+    margin: 1rem 0;
+    border-top-color: $border-color;
+  }
+}
+
+/* ===== Notes & Payment Section ===== */
+.notes-section,
+.payment-section {
+  padding: 1.5rem;
+  flex-shrink: 0;
+
+  ::ng-deep .mat-mdc-form-field {
+    width: 100%;
+    display: block;
+  }
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 16px 20px;
+  padding-bottom: 45px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+
+.notes-section {
+  background-color: $text-white;
+  border-bottom: 1px solid $border-color;
+}
+
+.payment-section {
+  background-color: $text-white;
+  border-bottom: 1px solid $border-color;
+}
+
+/* ===== Action Buttons ===== */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: $text-white;
+  flex-shrink: 0;
+
+  button {
+    flex: 1;
+    height: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+
+    ::ng-deep mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+/* ===== Material Form Field Global Overrides ===== */
+/* ===== Right Cart Drawer (UPDATED) ===== */
+::ng-deep .mat-drawer.cart-drawer {
+  width: $sidebar-width;
+  background: $sidebar-bg;
+  border-left: 1px solid $border-color;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
+}
+
+/* IMPORTANT: make drawer inner container full height */
+:host ::ng-deep .mat-drawer-inner-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+::ng-deep {
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: transparent;
+    }
+
+    .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+      background-color: $text-white;
+    }
+
+    &.mat-form-field-appearance-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: $border-color;
+      }
+
+      &:hover .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: $icon-default;
+        }
+      }
+
+      &.mat-focused .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: $header-bg;
+        }
+      }
+    }
+  }
+
+  .mat-drawer-backdrop {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 1200px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  ::ng-deep .mat-drawer.cart-drawer {
+    width: 380px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pos-header {
+    padding: 1rem;
+
+    .header-left h1 {
+      font-size: 1.2rem;
+    }
+
+    .header-right {
+      gap: 0.5rem;
+
+      .date-time,
+      .cashier-info {
+        display: none;
+      }
+    }
+  }
+
+  ::ng-deep .mat-drawer.cart-drawer {
+    width: $sidebar-width-mobile;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .panel-header {
+    padding: 1rem;
+  }
+
+  .category-tabs {
+    padding: 0.75rem 1rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  .cart-item {
+    flex-wrap: wrap;
+
+    .item-controls {
+      order: 3;
+      width: 100%;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+  }
+}

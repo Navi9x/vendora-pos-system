@@ -1,0 +1,7 @@
+<!--<router-outlet></router-outlet>-->
+@if (userAuthService.isLoggedIn()){
+  <app-header></app-header>
+  <app-content></app-content>
+} @else{
+  <app-login></app-login>
+}

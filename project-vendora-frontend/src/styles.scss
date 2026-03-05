@@ -1,0 +1,48 @@
+/* You can add global styles to this file, and also import other style files */
+// Add at the TOP of src/styles.scss
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+// Define your theme
+$my-primary: mat.m2-define-palette(mat.$m2-blue-palette, 600);
+$my-accent: mat.m2-define-palette(mat.$m2-blue-palette, 500);
+$my-warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+$my-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $my-primary,
+    accent: $my-accent,
+    warn: $my-warn,
+  ),
+  typography: mat.m2-define-typography-config(),
+  density: 0,
+));
+
+@include mat.all-component-themes($my-theme);
+
+// Then add these Material form field fixes
+.mat-mdc-form-field {
+  width: 100% !important;
+}
+
+.mat-mdc-text-field-wrapper {
+  background-color: white !important;
+}
+
+.mdc-text-field--filled {
+  background-color: white !important;
+}
+
+body {
+  margin: 0;
+  overflow: hidden; /* ← Prevent body scroll */
+  height: 100dvh;
+  padding-bottom: 24px;
+}
+
+html {
+  overflow: hidden; /* ← Prevent html scroll */
+  height: 100dvh;
+  padding-bottom: 24px;
+}

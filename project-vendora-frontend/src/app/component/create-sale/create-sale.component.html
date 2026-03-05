@@ -1,0 +1,202 @@
+<!-- POS Component with Right Sidebar - IMPROVED VERSION -->
+<div class="pos-container">
+  <!-- Header -->
+  <header class="pos-header">
+    <div class="header-left">
+      <h1>Point of Sale</h1>
+      <span class="invoice-number">Invoice No: {{invoiceNumber}}</span>
+    </div>
+    <div class="header-right">
+      <span class="date-time">2024-02-06 14:30</span>
+      <span class="cashier-info">Cashier: {{user.firstName}}</span>
+      <!-- Toggle button for right sidebar -->
+      <button mat-icon-button (click)="toggleCartSidebar()" class="cart-toggle-btn">
+        <mat-icon [matBadge]="cartItemCount" matBadgeColor="warn" [matBadgeHidden]="cartItemCount === 0">shopping_cart</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content with Drawer -->
+  <mat-drawer-container class="pos-main-container">
+    <!-- Main Content - Products Panel -->
+    <mat-drawer-content class="products-content">
+      <div class="products-panel">
+        <div class="panel-header">
+          <h2>Products</h2>
+          <div class="search-box">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Search products</mat-label>
+              <input matInput [(ngModel)]="searchTerm" placeholder="Search products...">
+              <mat-icon matSuffix (click)="search(searchTerm)">search</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="category-tabs">
+          <mat-chip-listbox aria-label="Product categories">
+            <mat-chip-option selected (click)="searchByCategory('All')">All</mat-chip-option>
+            <mat-chip-option *ngFor="let c of categories" [value]="c.id" (click)="searchByCategory(c.name)">{{c.name}}</mat-chip-option>
+          </mat-chip-listbox>
+        </div>
+
+        <div class="products-grid">
+          <!-- Product cards -->
+          <mat-card class="product-card" (click)="addToCart(product)" *ngFor="let product of  (filteredProducts.length==0 ? products : filteredProducts)">
+            <div class="product-image">
+              <img [src]="product.image" [alt]="product.name">
+            </div>
+            <mat-card-content class="product-info">
+              <h3>{{product.name}}</h3>
+              <p class="product-price">${{product.price}}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-drawer-content>
+
+    <!-- Right Sidebar - Cart Panel -->
+    <mat-drawer
+      #cartDrawer
+      mode="side"
+      position="end"
+      [opened]="cartOpened"
+      class="cart-drawer">
+
+      <div class="cart-panel">
+        <!-- Cart Header -->
+        <div class="cart-header">
+          <h2>Order Details</h2>
+          <button mat-icon-button (click)="toggleCartSidebar()" class="close-btn">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <!-- Order Info Section -->
+        <div class="order-info-section">
+          <mat-form-field appearance="outline">
+            <mat-label>Customer (Optional)</mat-label>
+            <mat-select [(ngModel)]="customerId" placeholder="Walk-in Customer">
+              <mat-option [value]="0">Walk-in Customer</mat-option>
+              <mat-option *ngFor="let c of customers" [value]="c.id">{{c.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Cart Items -->
+        <div class="cart-items-section">
+          <h3>Order Items ({{cartItemCount}})</h3>
+          <div class="cart-items">
+            <div class="empty-cart" *ngIf="cartItems.length === 0">
+              <mat-icon>shopping_cart</mat-icon>
+              <p>No items added yet</p>
+            </div>
+
+            <div class="cart-item" *ngFor="let item of cartItems">
+              <div class="item-details">
+                <h4>{{item.name}}</h4>
+                <p class="item-price">${{item.price}} each</p>
+              </div>
+
+              <div class="item-controls">
+                <button mat-mini-fab color="primary" class="qty-btn" (click)="decreaseQuantity(item)">
+                  <mat-icon>remove</mat-icon>
+                </button>
+                <span class="quantity">{{item.quantity}}</span>
+                <button mat-mini-fab color="primary" class="qty-btn" (click)="increaseQuantity(item)">
+                  <mat-icon>add</mat-icon>
+                </button>
+              </div>
+
+              <div class="item-total">
+                <span>${{item.price * item.quantity | number:'1.2-2'}}</span>
+                <button mat-icon-button color="warn" class="remove-btn" (click)="removeFromCart(item)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing Summary -->
+        <div class="pricing-section">
+          <div class="price-row">
+            <span>Subtotal:</span>
+            <span>${{subtotal | number:'1.2-2'}}</span>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <div class="price-row editable">
+            <span>Tax:</span>
+            <mat-form-field appearance="outline">
+              <input matInput type="number" [(ngModel)]="taxAmount" step="0.01" min="0" placeholder="0.00">
+              <span matPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+
+          <div class="price-row editable">
+            <span>Discount:</span>
+            <mat-form-field appearance="outline">
+              <input matInput type="number" [(ngModel)]="discount" step="0.01" min="0" placeholder="0.00">
+              <span matPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+
+          <div class="price-row editable">
+            <span>Delivery:</span>
+            <mat-form-field appearance="outline">
+              <input matInput type="number" [(ngModel)]="deliveryCharge" step="0.01" min="0" placeholder="0.00">
+              <span matPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+
+          <div class="price-row editable">
+            <span>Service:</span>
+            <mat-form-field appearance="outline">
+              <input matInput type="number" [(ngModel)]="serviceCharge" step="0.01" min="0" placeholder="0.00">
+              <span matPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+
+          <div class="price-row total">
+            <span>Total:</span>
+            <span>${{calculateTotal() | number:'1.2-2'}}</span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="notes-section">
+          <mat-form-field appearance="outline">
+            <mat-label>Notes (Optional)</mat-label>
+            <textarea matInput [(ngModel)]="notes" rows="3" placeholder="Add order notes..."></textarea>
+          </mat-form-field>
+        </div>
+
+        <!-- Payment Status -->
+        <div class="payment-section">
+          <mat-form-field appearance="outline">
+            <mat-label>Payment Status</mat-label>
+            <mat-select [(ngModel)]="paymentStatus">
+              <mat-option value="PENDING">Pending</mat-option>
+              <mat-option value="PAID">Paid</mat-option>
+              <mat-option value="PARTIAL">Partially Paid</mat-option>
+              <mat-option value="REFUNDED">Refunded</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button mat-stroked-button color="warn" (click)="clearCart()" [disabled]="cartItems.length === 0">
+            <mat-icon>clear</mat-icon>
+            Clear
+          </button>
+          <button mat-raised-button color="primary" (click)="completeSale()" [disabled]="cartItems.length === 0">
+            <mat-icon>check_circle</mat-icon>
+            Complete Sale
+          </button>
+        </div>
+      </div>
+    </mat-drawer>
+  </mat-drawer-container>
+</div>

@@ -1,0 +1,89 @@
+<mat-drawer-container>
+  <mat-drawer [opened]="opened" mode="side" class="modern-sidebar">
+    <!-- Sidebar Header (Optional - for branding) -->
+    <div class="sidebar-header">
+      <div class="logo-section">
+        <mat-icon class="logo-icon">point_of_sale</mat-icon>
+        <h2 class="app-title">Cloud POS</h2>
+      </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <mat-nav-list class="nav-menu">
+      <mat-list-item
+        routerLink="/"
+        [routerLinkActive]="['active']"
+        [routerLinkActiveOptions]="{exact: true}"
+        class="nav-item">
+        <div class="nav-item-content">
+          <mat-icon class="nav-icon">dashboard</mat-icon>
+          <span class="nav-label">Dashboard</span>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item routerLink="/create-sale" [routerLinkActive]="['active']" class="nav-item">
+        <div class="nav-item-content">
+          <mat-icon class="nav-icon">shopping_cart</mat-icon>
+          <span class="nav-label">Sales</span>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item
+        routerLink="/products"
+        [routerLinkActive]="['active']"
+        class="nav-item">
+        <div class="nav-item-content">
+          <mat-icon class="nav-icon">inventory_2</mat-icon>
+          <a class="nav-label">Products</a>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item
+        routerLink="/customers"
+        [routerLinkActive]="['active']"
+        class="nav-item">
+        <div class="nav-item-content">
+          <mat-icon class="nav-icon">people</mat-icon>
+          <span class="nav-label">Customers</span>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item
+        routerLink="/sales-history"
+        [routerLinkActive]="['active']"
+        class="nav-item">
+        <div class="nav-item-content">
+          <mat-icon class="nav-icon">analytics</mat-icon>
+          <span class="nav-label">Sales history</span>
+        </div>
+      </mat-list-item>
+
+      <mat-list-item
+        routerLink="/settings"
+        [routerLinkActive]="['active']"
+        class="nav-item">
+        <div class="nav-item-content">
+          <mat-icon class="nav-icon">settings</mat-icon>
+          <span class="nav-label">Settings</span>
+        </div>
+      </mat-list-item>
+    </mat-nav-list>
+
+    <!-- Sidebar Footer (Optional - for user info) -->
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <mat-icon class="user-avatar">account_circle</mat-icon>
+        <div class="user-details">
+          <span class="user-name">Admin User</span>
+          <span class="user-role">Manager</span>
+        </div>
+      </div>
+    </div>
+  </mat-drawer>
+
+  <mat-drawer-content>
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

@@ -1,0 +1,481 @@
+<div class="inventory-container">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-left">
+      <h1>Inventory Management</h1>
+      <p class="subtitle">Track and manage your product stock levels</p>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-outline-white" (click)="onImport()">
+        <span class="icon">📥</span> Import
+      </button>
+      <button class="btn btn-primary" (click)="onAddProduct()">
+        <span class="icon">+</span> Add Product
+      </button>
+    </div>
+  </header>
+
+  <!-- Quick Stats -->
+  <div class="stats-section">
+    <div class="stat-card">
+      <div class="stat-icon total-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <h3>Total Products</h3>
+        <p class="stat-value">{{ totalProducts }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon low-stock-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <h3>Low Stock Items</h3>
+        <p class="stat-value warning">{{ lowStockCount }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon out-stock-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <h3>Out of Stock</h3>
+        <p class="stat-value danger">{{ outOfStockCount }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon value-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <h3>Inventory Value</h3>
+        <p class="stat-value">{{ inventoryValue | currency }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="filters-container">
+
+      <div class="filter-group search-group">
+        <label for="searchInput">Search</label>
+        <div class="search-input-wrapper">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="search-icon">
+            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <input type="text" id="searchInput" class="filter-control"
+                 [(ngModel)]="filters.search"
+                 placeholder="Search by name, SKU, barcode...">
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label for="categoryFilter">Category</label>
+        <select id="categoryFilter" class="filter-control" [(ngModel)]="filters.categoryId">
+          <option [value]="null">All Categories</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="stockFilter">Stock Status</label>
+        <select id="stockFilter" class="filter-control" [(ngModel)]="filters.stockStatus">
+          <option [value]="null">All Stock</option>
+          <option value="IN_STOCK">In Stock</option>
+          <option value="LOW_STOCK">Low Stock</option>
+          <option value="OUT_OF_STOCK">Out of Stock</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="activeFilter">Status</label>
+        <select id="activeFilter" class="filter-control" [(ngModel)]="filters.isActive">
+          <option [value]="null">All Status</option>
+          <option [value]="true">Active</option>
+          <option [value]="false">Inactive</option>
+        </select>
+      </div>
+
+      <div class="filter-group d1">
+        <mat-form-field>
+        <mat-label>Select date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          [(ngModel)]="selectedDate">
+
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-secondary btn-sm" (click)="clearFilters()">Clear</button>
+        <button class="btn btn-primary btn-sm" (click)="applyFilters()">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inventory Table -->
+  <div class="table-section">
+    <div class="table-header">
+      <h2>Product Inventory</h2>
+      <div class="table-actions">
+        <div class="view-toggle">
+          <button class="view-btn"
+                  [class.active]="viewMode === 'table'"
+                  (click)="setViewMode('table')"
+                  title="Table View">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+          <button class="view-btn"
+                  [class.active]="viewMode === 'grid'"
+                  (click)="setViewMode('grid')"
+                  title="Grid View">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+        <button class="btn btn-outline btn-sm" (click)="exportData()">
+          <span class="icon">↓</span> Export
+        </button>
+        <button class="btn btn-outline btn-sm" (click)="printInventory()">
+          <span class="icon">🖨</span> Print
+        </button>
+      </div>
+    </div>
+
+    <!-- Table View -->
+    <div class="table-view" [class.active]="viewMode === 'table'">
+      <div class="table-responsive">
+        <table class="inventory-table">
+          <thead>
+          <tr>
+            <th>Product</th>
+            <th>SKU</th>
+            <th>Category</th>
+            <th>Unit Type</th>
+            <th>Price</th>
+            <th>Cost Price</th>
+            <th>Stock Qty</th>
+            <th>Min Stock</th>
+            <th>Stock Status</th>
+            <th>Last Restocked</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of inventoryItems"
+              class="inventory-row"
+              [class.low-stock]="isLowStock(item)"
+              [class.out-of-stock]="isOutOfStock(item)">
+            <td>
+              <div class="product-cell">
+                <img [src]="item.product.image || 'assets/images/placeholder.png'"
+                     [alt]="item.product.name"
+                     class="product-image">
+                <div class="product-info">
+                  <span class="product-name">{{ item.product.name }}</span>
+                  <span class="product-barcode" *ngIf="item.product.barcode">
+                      {{ item.product.barcode }}
+                    </span>
+                </div>
+              </div>
+            </td>
+            <td class="sku-cell">{{ item.product.sku || '-' }}</td>
+            <td>{{ item.product.category?.name || '-' }}</td>
+            <td>
+                <span class="unit-badge" *ngIf="item.product.unitType">
+                  {{ item.product.unitType }}
+                </span>
+              <span *ngIf="!item.product.unitType">-</span>
+            </td>
+            <td class="price-cell">{{ item.product.price | currency }}</td>
+            <td class="cost-cell">{{ item.product.costPrice | currency }}</td>
+            <td class="quantity-cell">
+                <span class="quantity"
+                      [class.warning]="isLowStock(item)"
+                      [class.danger]="isOutOfStock(item)">
+                  {{ item.quantity }}
+                </span>
+            </td>
+            <td class="min-stock-cell">{{ item.minStockLevel || '-' }}</td>
+            <td>
+                <span class="stock-badge"
+                      [class.stock-good]="!isLowStock(item) && !isOutOfStock(item)"
+                      [class.stock-low]="isLowStock(item) && !isOutOfStock(item)"
+                      [class.stock-out]="isOutOfStock(item)">
+                  {{ getStockStatus(item) }}
+                </span>
+            </td>
+            <td class="date-cell">
+              {{ item.lastRestocked ? (item.lastRestocked | date: 'MMM d, y') : '-' }}
+            </td>
+            <td>
+                <span class="status-badge"
+                      [class.status-active]="item.product.isActive"
+                      [class.status-inactive]="!item.product.isActive">
+                  {{ item.product.isActive ? 'Active' : 'Inactive' }}
+                </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="action-btn view-btn"
+                        (click)="viewDetails(item)"
+                        title="View Details">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </button>
+                <button class="action-btn restock-btn"
+                        (click)="openRestockModal(item)"
+                        title="Restock">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 4v16m8-8H4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+                <button class="action-btn edit-btn"
+                        (click)="editProduct(item)"
+                        title="Edit">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Grid View -->
+    <div class="grid-view" [class.active]="viewMode === 'grid'">
+      <div class="inventory-grid">
+        <div class="inventory-card" *ngFor="let item of inventoryItems">
+          <div class="card-image">
+            <img [ngSrc]="item.product.image || 'assets/images/placeholder.png'"
+                 [alt]="item.product.name" fill>
+            <span class="stock-badge-overlay"
+                  [class.stock-good]="!isLowStock(item) && !isOutOfStock(item)"
+                  [class.stock-low]="isLowStock(item) && !isOutOfStock(item)"
+                  [class.stock-out]="isOutOfStock(item)">
+              {{ getStockStatus(item) }}
+            </span>
+          </div>
+          <div class="card-content">
+            <h3 class="card-title">{{ item.product.name }}</h3>
+            <p class="card-sku" *ngIf="item.product.sku">SKU: {{ item.product.sku }}</p>
+            <p class="card-category">{{ item.product.category?.name || 'Uncategorized' }}</p>
+            <div class="card-pricing">
+              <span class="card-price">{{ item.product.price | currency }}</span>
+              <span class="card-cost">Cost: {{ item.product.costPrice | currency }}</span>
+            </div>
+            <div class="card-stock">
+              <div class="stock-info">
+                <span class="stock-label">Quantity:</span>
+                <span class="stock-value">{{ item.quantity }}</span>
+              </div>
+              <div class="stock-bar">
+                <div class="stock-fill" [style.width.%]="getStockPercentage(item)"></div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-sm btn-outline" (click)="viewDetails(item)">View</button>
+              <button class="btn btn-sm btn-primary" (click)="openRestockModal(item)">Restock</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-section">
+      <div class="pagination-info">
+        Showing <span>{{ pageStart }}</span> to <span>{{ pageEnd }}</span> of <span>{{ totalRecords }}</span> products
+      </div>
+      <div class="pagination-controls">
+        <button class="pagination-btn" (click)="goToPage(1)" [disabled]="currentPage === 1">««</button>
+        <button class="pagination-btn" (click)="previousPage()" [disabled]="currentPage === 1">‹</button>
+        <button *ngFor="let page of visiblePages"
+                class="pagination-btn"
+                [class.active]="page === currentPage"
+                (click)="goToPage(page)">
+          {{ page }}
+        </button>
+        <button class="pagination-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">›</button>
+        <button class="pagination-btn" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages">»»</button>
+      </div>
+      <div class="page-size-selector">
+        <label for="pageSize">Show:</label>
+        <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+          <option [value]="10">10</option>
+          <option [value]="25">25</option>
+          <option [value]="50">50</option>
+          <option [value]="100">100</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Product Detail Modal -->
+<div class="modal" [class.active]="showDetailModal">
+  <div class="modal-overlay" (click)="closeDetailModal()"></div>
+  <div class="modal-content" *ngIf="selectedItem">
+    <div class="modal-header">
+      <h2>Product Details</h2>
+      <button class="modal-close" (click)="closeDetailModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid">
+        <div class="detail-image">
+<!--          <img [ngSrc]="selectedItem.product.image || 'assets/images/placeholder.png'"-->
+<!--               [alt]="selectedItem.product.name" fill>-->
+        </div>
+        <div class="detail-info">
+          <h3>{{ selectedItem.product.name }}</h3>
+          <p class="detail-sku" *ngIf="selectedItem.product.sku">
+            SKU: <span>{{ selectedItem.product.sku }}</span>
+          </p>
+          <p class="detail-barcode" *ngIf="selectedItem.product.barcode">
+            Barcode: <span>{{ selectedItem.product.barcode }}</span>
+          </p>
+          <p class="detail-category">
+            Category: <span>{{ selectedItem.product.category?.name || '-' }}</span>
+          </p>
+          <div class="detail-pricing">
+            <div class="price-item">
+              <span class="label">Selling Price:</span>
+              <span class="value">{{ selectedItem.product.price | currency }}</span>
+            </div>
+            <div class="price-item">
+              <span class="label">Cost Price:</span>
+              <span class="value">{{ selectedItem.product.costPrice | currency }}</span>
+            </div>
+            <div class="price-item profit">
+              <span class="label">Profit Margin:</span>
+              <span class="value">{{ getProfitMargin(selectedItem) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h4>Inventory Information</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Current Stock:</span>
+            <span class="value">{{ selectedItem.quantity }} {{ selectedItem.product.unitType || 'PIECE' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Min Stock Level:</span>
+            <span class="value">{{ selectedItem.minStockLevel || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Max Stock Level:</span>
+            <span class="value">{{ selectedItem.maxStockLevel || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Last Restocked:</span>
+            <span class="value">
+              {{ selectedItem.lastRestocked ? (selectedItem.lastRestocked | date: 'MMM d, y') : '-' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section"
+           *ngIf="selectedItem.product.genericName || selectedItem.product.manufacturer">
+        <h4>Pharmacy Information</h4>
+        <div class="info-grid">
+          <div class="info-item" *ngIf="selectedItem.product.genericName">
+            <span class="label">Generic Name:</span>
+            <span class="value">{{ selectedItem.product.genericName }}</span>
+          </div>
+          <div class="info-item" *ngIf="selectedItem.product.manufacturer">
+            <span class="label">Manufacturer:</span>
+            <span class="value">{{ selectedItem.product.manufacturer }}</span>
+          </div>
+          <div class="info-item" *ngIf="selectedItem.product.batchNumber">
+            <span class="label">Batch Number:</span>
+            <span class="value">{{ selectedItem.product.batchNumber }}</span>
+          </div>
+          <div class="info-item" *ngIf="selectedItem.product.expiryDate">
+            <span class="label">Expiry Date:</span>
+            <span class="value">{{ selectedItem.product.expiryDate | date: 'MMM d, y' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeDetailModal()">Close</button>
+      <button class="btn btn-outline" (click)="editProduct(selectedItem)">Edit Product</button>
+      <button class="btn btn-primary" (click)="openRestockModal(selectedItem)">Restock</button>
+    </div>
+  </div>
+</div>
+
+<!-- Restock Modal -->
+<div class="modal" [class.active]="showRestockModal">
+  <div class="modal-overlay" (click)="closeRestockModal()"></div>
+  <div class="modal-content modal-small" *ngIf="selectedItem">
+    <div class="modal-header">
+      <h2>Restock Product</h2>
+      <button class="modal-close" (click)="closeRestockModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Product</label>
+        <input type="text" class="form-control" [value]="selectedItem.product.name" disabled>
+      </div>
+      <div class="form-group">
+        <label>Current Stock</label>
+        <input type="text" class="form-control"
+               [value]="selectedItem.quantity + ' ' + (selectedItem.product.unitType || 'PIECE')"
+               disabled>
+      </div>
+      <div class="form-group">
+        <label for="restockQuantity">Quantity to Add</label>
+        <input type="number"
+               id="restockQuantity"
+               class="form-control"
+               [(ngModel)]="restockQuantity"
+               placeholder="Enter quantity"
+               min="1">
+      </div>
+      <div class="form-group">
+        <label for="restockNotes">Notes (Optional)</label>
+        <textarea id="restockNotes"
+                  class="form-control"
+                  [(ngModel)]="restockNotes"
+                  rows="3"
+                  placeholder="Enter any notes..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeRestockModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="confirmRestock()">Confirm Restock</button>
+    </div>
+  </div>
+</div>
