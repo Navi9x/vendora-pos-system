@@ -112,7 +112,6 @@ export class CreateSaleComponent implements OnInit {
     this.business = this.userAuthService.getBusinesses()[0];
     this.userService.getAllProducts(this.business.id).subscribe(
       (res:any) => {
-        console.log("B -"+this.business);
         console.log(res);
         this.products = res;
       }

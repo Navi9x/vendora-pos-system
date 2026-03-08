@@ -24,7 +24,7 @@ public class ProductService {
                     product.getName(),
                     product.getPrice(),
                     product.getCategory().getName(),
-                    "",
+                    product.getImage()!=null?product.getImage():"",
                     product.getIsActive()
             );
             productDTOs.add(productDTO);
