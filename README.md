@@ -5,7 +5,7 @@ Multi-tenant Point of Sale system with comprehensive inventory management, sales
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Angular](https://img.shields.io/badge/Angular-17.x-red.svg)](https://angular.io/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15.x-blue.svg)](https://www.postgresql.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.x-blue.svg)](https://www.mysql.com/)
 
 ---
 
@@ -23,6 +23,7 @@ Vendora is a modern, cloud-ready POS system designed for multi-tenant retail bus
 - 👥 **Customer Management** - Track customer purchases and preferences
 - 🔐 **JWT Authentication** - Secure, token-based authentication
 - 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
+- 📚 **API Documentation** - Interactive Swagger UI
 
 ---
 
@@ -63,8 +64,12 @@ Add and manage products with detailed information including pricing, inventory, 
 - **Spring Boot 3.x** - Core framework
 - **Spring Security** - JWT authentication & authorization
 - **Spring Data JPA** - Database abstraction
-- **PostgreSQL** - Primary database
+- **MySQL 8.x** - Primary database
 - **Hibernate** - ORM
+- **Lombok** - Reduce boilerplate code
+- **ModelMapper** - Object mapping
+- **JWT (JJWT 0.11.5)** - Token generation & validation
+- **SpringDoc OpenAPI** - API documentation (Swagger UI)
 - **Maven** - Dependency management
 
 ### Frontend
@@ -80,6 +85,24 @@ Add and manage products with detailed information including pricing, inventory, 
 - **JWT** - Stateless authentication
 - **MVC Pattern** - Clean separation of concerns
 
+### Key Dependencies
+
+**Backend:**
+- Spring Boot Starter Data JPA
+- Spring Boot Starter Security
+- Spring Boot Starter Web MVC
+- Spring Boot Starter Validation
+- MySQL Connector/J
+- Lombok
+- ModelMapper 3.2.4
+- JJWT 0.11.5 (JWT implementation)
+- SpringDoc OpenAPI 2.7.0
+
+**Testing:**
+- Spring Boot Starter Test
+- Spring Security Test
+- Spring Data JPA Test
+
 ---
 
 ## 📋 Prerequisites
@@ -88,7 +111,7 @@ Before running this project, ensure you have:
 
 - **Java 17+** installed
 - **Node.js 18+** and npm installed
-- **PostgreSQL 15+** database server
+- **MySQL 8+** database server
 - **Maven 3.8+** for backend
 - **Angular CLI** for frontend
 
@@ -107,12 +130,13 @@ cd vendora-pos-system
 
 #### Configure Database
 
-Create a PostgreSQL database:
+Create a MySQL database:
 
 ```sql
 CREATE DATABASE vendora_pos;
-CREATE USER vendora_user WITH PASSWORD 'db_password';
-GRANT ALL PRIVILEGES ON DATABASE vendora_pos TO vendora_user;
+CREATE USER 'vendora_user'@'localhost' IDENTIFIED BY 'db_password';
+GRANT ALL PRIVILEGES ON vendora_pos.* TO 'vendora_user'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
 #### Update Application Properties
@@ -121,16 +145,26 @@ Edit `src/main/resources/application.properties`:
 
 ```properties
 # Database Configuration
-spring.datasource.url=jdbc:postgresql://localhost:5432/vendora_pos
+spring.datasource.url=jdbc:mysql://localhost:3306/vendora_pos?useSSL=false&serverTimezone=UTC
 spring.datasource.username=vendora_user
 spring.datasource.password=db_password
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA/Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
 # JWT Configuration
-jwt.secret=secret-key-here
+jwt.secret=secret-key-here-min-256-bits-long
 jwt.expiration=86400000
 
 # Server Port
 server.port=8080
+
+# Swagger UI
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
 ```
 
 #### Run Backend
@@ -257,6 +291,22 @@ GET    /api/dashboard/top-products - Top selling products
 
 ---
 
+## 📚 API Documentation
+
+This project uses **SpringDoc OpenAPI** for interactive API documentation.
+
+After starting the backend, access:
+- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **OpenAPI JSON**: http://localhost:8080/api-docs
+
+The Swagger UI provides:
+- Interactive API testing
+- Request/Response examples
+- Schema definitions
+- Authentication testing
+
+---
+
 ## 🔐 Authentication Flow
 
 1. User logs in with credentials
@@ -265,6 +315,11 @@ GET    /api/dashboard/top-products - Top selling products
 4. Token included in Authorization header for all requests
 5. Backend validates token on each request
 6. Token expires after 24 hours (configurable)
+
+**JWT Configuration:**
+- Algorithm: HS256
+- Library: JJWT 0.11.5
+- Token format: `Bearer <token>`
 
 ---
 
@@ -279,6 +334,7 @@ Each business has isolated data using a `business_id` field in all tables. Row-l
 - Product variants (size, color, etc.)
 - Barcode/SKU support
 - Image upload support
+- Pharmacy-specific fields (generic name, expiry date, batch number)
 
 ### Sales Processing
 - Fast product search
@@ -314,81 +370,111 @@ npm test
 
 ---
 
-## 🚢 Deployment
+## 💡 Project Highlights
 
-### Backend (Spring Boot)
+### Technical Skills Demonstrated
 
-#### Build JAR
-```bash
-mvn clean package
-```
+**Backend Development:**
+- RESTful API design and implementation
+- JWT authentication & authorization
+- Multi-tenant architecture
+- Database modeling with JPA/Hibernate
+- Data validation and error handling
+- Dependency injection with Spring
 
-#### Run JAR
-```bash
-java -jar target/vendora-pos-0.0.1-SNAPSHOT.jar
-```
+**Frontend Development:**
+- Component-based architecture with Angular
+- Reactive programming with RxJS
+- State management
+- Form validation
+- Responsive design
+- TypeScript & SCSS
 
-### Frontend (Angular)
+**Database Design:**
+- Normalized database schema
+- Entity relationships (One-to-Many, Many-to-One)
+- Query optimization
+- Data integrity constraints
 
-#### Build for Production
-```bash
-ng build --configuration production
-```
+**Security:**
+- JWT token-based authentication
+- Password encryption
+- Role-based access control
+- Multi-tenant data isolation
 
-Deploy the `dist/` folder to your web server (Nginx, Apache, etc.)
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+**Code Quality:**
+- Clean code principles
+- MVC/MVVM patterns
+- DTO pattern for data transfer
+- Service layer architecture
+- Lombok for boilerplate reduction
+- ModelMapper for object mapping
 
 ---
 
-## 🙏 Acknowledgments
+## 👨‍💻 Developer
 
-- Spring Boot team for the excellent framework
-- Angular team for the powerful frontend framework
-- All open-source contributors
-
----
-
-## 📧 Support
-
-For support, email support@vendora.com or create an issue in this repository.
+**Profile**
+- 📧 Email: navidurashoda@icloud.com 
+- 💼 LinkedIn: [navidu-rathnayaka](https://linkedin.com/in/navidu-rathnayaka)
+- 🐙 GitHub: [@Navi9x](https://github.com/Navi9x)
 
 ---
 
-## 🗺️ Roadmap
+## 📄 About This Project
 
-- [ ] Mobile app (React Native)
-- [ ] Multi-language support
-- [ ] Advanced reporting & analytics
-- [ ] Integration with payment gateways
-- [ ] Barcode scanner support
-- [ ] Cloud deployment guides
-- [ ] Docker containerization
+This is a **personal project** developed to demonstrate full-stack development skills using modern technologies. It showcases:
+
+- **Real-world application** - Solving actual business problems
+- **Production-ready code** - Following best practices and design patterns
+- **Scalable architecture** - Multi-tenant design for growth
+- **Modern tech stack** - Using industry-standard frameworks
+- **Attention to detail** - Professional UI/UX design
+
+**Development Timeline:** [35-40 Days]
+
+**Purpose:** Portfolio project showcasing full-stack development capabilities for job opportunities
+
+---
+
+## 🎯 Future Enhancements
+
+**Phase 1 - Core Features:**
+- [x] Multi-tenant POS system
+- [x] Inventory management
+- [x] Sales tracking & history
+- [x] Dashboard analytics
+- [x] JWT authentication
+
+**Phase 2 - Mobile & Expansion:**
+- [ ] React Native mobile app for customers
 - [ ] Customer-facing e-commerce platform
+- [ ] Self-pickup order system
+
+**Phase 3 - Local Market Integration:**
+- [ ] Sri Lankan payment gateways (PayHere, Koko)
+- [ ] Multi-language support (Sinhala, Tamil, English)
+- [ ] WhatsApp notifications
+- [ ] Integration with local delivery services
+
+**Phase 4 - Advanced Features:**
+- [ ] Advanced analytics & reporting
+- [ ] Barcode scanner integration
+- [ ] Email receipt system
+- [ ] Loyalty program management
+- [ ] Employee management module
+
+---
+
+## 🇱🇰 Vision
+
+Building a comprehensive POS ecosystem for Sri Lankan small businesses:
+1. **Affordable POS system** - Help businesses digitize operations
+2. **Centralized marketplace** - Aggregate products from multiple businesses
+3. **Customer mobile app** - Free e-commerce for POS users
+4. **Data-driven insights** - Help businesses make better decisions
+
+This creates a **network effect** where more businesses = more products = more customers = more value for everyone.
 
 ---
 
