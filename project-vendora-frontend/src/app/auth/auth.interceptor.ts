@@ -6,6 +6,8 @@ import {catchError, throwError} from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
+  console.log('interceptor hit');
+
   const authService= inject(UserAuthService);
   const router = inject(Router);
 

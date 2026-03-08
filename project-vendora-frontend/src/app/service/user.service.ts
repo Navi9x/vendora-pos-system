@@ -1,67 +1,108 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {UserAuthService} from './user-auth.service';
-import {NgForm} from '@angular/forms';
-import {Observable} from 'rxjs';
-import {Customer} from '../model/Customer';
-import {Category} from '../model/Category';
-import {SaleResponse} from '../model/SaleResponse';
-import {Cashier} from '../model/Cashier';
-import {InventoryResponseDTO} from '../model/inventory';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { UserAuthService } from './user-auth.service';
+import { NgForm } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { Customer } from '../model/Customer';
+import { Category } from '../model/Category';
+import { SaleResponse } from '../model/SaleResponse';
+import { Cashier } from '../model/Cashier';
+import { InventoryRequestDTO, InventoryResponseDTO } from '../model/inventory';
+import { SalesChartItem } from '../model/SalesChartItem';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
-
   BASE_URL = 'http://localhost:8080';
 
   requestHeaders = new HttpHeaders({
     'Content-Type': 'application/json',
-    'No-Auth': 'True'
-  })
+    'No-Auth': 'True',
+  });
 
-  constructor(private http:HttpClient,private userAuthService:UserAuthService) { }
+  constructor(
+    private http: HttpClient,
+    private userAuthService: UserAuthService,
+  ) {}
 
-  public login(loginForm:any){
-    return this.http.post(this.BASE_URL+'/authentication',loginForm,{headers:this.requestHeaders});
+  public login(loginForm: any) {
+    return this.http.post(this.BASE_URL + '/authentication', loginForm, {
+      headers: this.requestHeaders,
+    });
   }
 
-  public getAllProducts(businessId:string):Observable<Object>{
-    return this.http.get(this.BASE_URL+'/api/v1/sales/'+businessId)
+  public isTokenValid(): Observable<boolean> {
+    return this.http.get<boolean>(this.BASE_URL + '/validate-token');
   }
 
-  public countAllSales():Observable<Object>{
-    return this.http.get(this.BASE_URL+'/api/v1/sales/total')
+  public getAllProducts(businessId: string): Observable<Object> {
+    return this.http.get(this.BASE_URL + '/api/v1/sales/' + businessId);
   }
 
-  public saveSales(saleData:any){
-    return this.http.post(this.BASE_URL+'/api/v1/sales/save',saleData);
+  public countAllSales(): Observable<Object> {
+    return this.http.get(this.BASE_URL + '/api/v1/sales/total');
+  }
+
+  public saveSales(saleData: any) {
+    return this.http.post(this.BASE_URL + '/api/v1/sales/save', saleData);
+  }
+
+  public saveProduct(productData: any) {
+    return this.http.post(this.BASE_URL + '/api/v1/inventory/saveProduct', productData);
   }
 
   public getAllCustomers() {
-    return this.http.get<Customer[]>(this.BASE_URL + '/api/v1/customers/get-all');
+    return this.http.get<Customer[]>(
+      this.BASE_URL + '/api/v1/customers/get-all',
+    );
   }
 
-  public getAllCategories(){
-    return this.http.get<Category[]>(this.BASE_URL + '/api/v1/products/categories');
+  public getAllCategories() {
+    return this.http.get<Category[]>(
+      this.BASE_URL + '/api/v1/products/categories',
+    );
   }
 
-  public getAllCashiers():Observable<Cashier[]>{
+  public getAllCashiers(): Observable<Cashier[]> {
     return this.http.get<Cashier[]>(this.BASE_URL + '/user/get-all');
   }
 
-  public loadInventory():Observable<InventoryResponseDTO[]>{
-    return this.http.get<InventoryResponseDTO[]>(this.BASE_URL+'/api/v1/inventory/loadAll');
+  public loadInventory(
+    filters: InventoryRequestDTO,
+  ): Observable<InventoryResponseDTO[]> {
+    const params: any = {};
+
+    Object.keys(filters).forEach((key) => {
+      const value = (filters as any)[key];
+      if (value !== null && value !== undefined && value !== '') {
+        params[key] = value;
+      }
+    });
+    return this.http.get<InventoryResponseDTO[]>(
+      this.BASE_URL + '/api/v1/inventory/loadAll',
+      { params },
+    );
   }
 
-  public loadSalesHistory(page: number, size: number,selectedDate?: Date | null,
-                          cashierId?: number | null, saleStatus?:string | null,paymentStatus?:string|null){
+  public loadAllInventory(): Observable<InventoryResponseDTO[]> {
+    return this.http.get<InventoryResponseDTO[]>(
+      this.BASE_URL + '/api/v1/inventory/loadAllInventory',
+    );
+  }
 
-    const params:any={
+  public loadSalesHistory(
+    page: number,
+    size: number,
+    selectedDate?: Date | null,
+    cashierId?: number | null,
+    saleStatus?: string | null,
+    paymentStatus?: string | null,
+  ) {
+    const params: any = {
       page,
       size,
-    }
+    };
 
     if (selectedDate) {
       params.date = selectedDate.toISOString().split('T')[0];
@@ -79,7 +120,27 @@ export class UserService {
       params.paymentStatus = paymentStatus;
     }
 
-    return this.http.get<SaleResponse[]>(`${this.BASE_URL}/api/v1/sales-history/load`,{params});
+    return this.http.get<SaleResponse[]>(
+      `${this.BASE_URL}/api/v1/sales-history/load`,
+      { params },
+    );
   }
 
+  public loadSalesChart(period: string): Observable<SalesChartItem[]> {
+    return this.http.get<SalesChartItem[]>(
+      `${this.BASE_URL}/api/v1/sales-history/sales-chart`,
+      {
+        params: { period },
+      },
+    );
+  }
+
+  public loadAllSalesHistory(date: string): Observable<SaleResponse[]> {
+    return this.http.get<SaleResponse[]>(
+      `${this.BASE_URL}/api/v1/sales-history/loadAll`,
+      {
+        params: { date },
+      },
+    );
+  }
 }

@@ -15,13 +15,14 @@ import com.vendora.vendorapos.repo.UserRepo;
 import com.vendora.vendorapos.service.AuthService;
 import com.vendora.vendorapos.service.BusinessService;
 import com.vendora.vendorapos.service.JwtService;
-import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
+import com.vendora.vendorapos.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,16 +48,13 @@ public class LoginController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     public LoginController(AuthService authService, JwtService jwtService) {
         this.authService = authService;
         this.jwtService = jwtService;
     }
-
-    @PostConstruct
-    public void init() {
-//        defaultSave();
-    }
-
 
 
     public void defaultSave(){
@@ -111,6 +109,25 @@ public class LoginController {
     public LoginResponse loginWithGeneratingJWT(@RequestBody LoginRequest loginRequest) throws Exception{
         authService.authenticate(loginRequest.getUsername(),loginRequest.getUserPassword());
         return jwtService.createJwtToken(loginRequest);
+    }
+
+    @GetMapping("/validate-token")
+    public ResponseEntity<Boolean> isTokenValid(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+            }
+
+            String token = authHeader.substring(7);
+            String username = jwtUtil.getUsernameFromToken(token);
+            UserDetails userDetails = jwtService.loadUserByUsername(username);
+
+            return ResponseEntity.ok(jwtUtil.validateToken(token, userDetails));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+        }
     }
 
     @PostMapping("/test")

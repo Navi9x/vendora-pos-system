@@ -6,9 +6,6 @@
       <p class="subtitle">Track and manage your product stock levels</p>
     </div>
     <div class="header-right">
-      <button class="btn btn-outline-white" (click)="onImport()">
-        <span class="icon">📥</span> Import
-      </button>
       <button class="btn btn-primary" (click)="onAddProduct()">
         <span class="icon">+</span> Add Product
       </button>
@@ -85,7 +82,7 @@
       <div class="filter-group">
         <label for="categoryFilter">Category</label>
         <select id="categoryFilter" class="filter-control" [(ngModel)]="filters.categoryId">
-          <option [value]="null">All Categories</option>
+          <option [ngValue]="null">All Categories</option>
           <option *ngFor="let category of categories" [value]="category.id">
             {{ category.name }}
           </option>
@@ -96,9 +93,9 @@
         <label for="stockFilter">Stock Status</label>
         <select id="stockFilter" class="filter-control" [(ngModel)]="filters.stockStatus">
           <option [value]="null">All Stock</option>
-          <option value="IN_STOCK">In Stock</option>
-          <option value="LOW_STOCK">Low Stock</option>
-          <option value="OUT_OF_STOCK">Out of Stock</option>
+          <option [ngValue]="StockStatus.IN_STOCK">In Stock</option>
+          <option [ngValue]="StockStatus.LOW_STOCK">Low Stock</option>
+          <option [ngValue]="StockStatus.OUT_OF_STOCK">Out of Stock</option>
         </select>
       </div>
 

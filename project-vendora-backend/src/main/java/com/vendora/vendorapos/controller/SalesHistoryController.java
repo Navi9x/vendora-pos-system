@@ -1,6 +1,7 @@
 package com.vendora.vendorapos.controller;
 
 import com.vendora.vendorapos.dto.SaleResponseDTO;
+import com.vendora.vendorapos.dto.SalesChartResponseDTO;
 import com.vendora.vendorapos.entity.enums.PaymentStatus;
 import com.vendora.vendorapos.entity.enums.SaleStatus;
 import com.vendora.vendorapos.security.tenant.TenantContext;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -35,9 +37,20 @@ public class SalesHistoryController {
             @RequestParam(required = false) SaleStatus saleStatus,
             @RequestParam(required = false) PaymentStatus paymentStatus
             ){
-        System.out.println("Page: " + page+" Size: " + size);
         Long tenantId = TenantContext.getTenantId();
         return salesHistoryService.loadSalesHistory(tenantId, page, size,date,cashierId,saleStatus,paymentStatus);
+    }
+
+    @GetMapping(path = "loadAll",params = {"date"})
+    public List<SaleResponseDTO> loadAllSalesHistory(@RequestParam String date){
+        Long tenantId = TenantContext.getTenantId();
+        return salesHistoryService.loadAllSalesHistory(tenantId,date);
+    }
+
+    @GetMapping("/sales-chart")
+    public List<SalesChartResponseDTO> loadSalesChart(@RequestParam String period) {
+        Long tenantId = TenantContext.getTenantId();
+        return salesHistoryService.loadSalesChart(tenantId, period);
     }
 
 }

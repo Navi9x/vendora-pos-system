@@ -1,0 +1,527 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-left">
+      <h1>Dashboard</h1>
+      <p class="subtitle">
+        Welcome back! Here's what's happening with your business today.
+      </p>
+    </div>
+    <div class="header-right">
+      <div class="date-range-selector">
+        <select
+          class="date-select"
+          [(ngModel)]="selectedPeriod"
+          (change)="onPeriodChange()"
+        >
+          <option value="today">Today</option>
+          <option value="yesterday">Yesterday</option>
+          <option value="this_week">This Week</option>
+          <option value="this_month" selected>This Month</option>
+          <option value="last_month">Last Month</option>
+          <!-- <option value="custom">Custom Range</option> -->
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Stats Cards -->
+  <div class="stats-grid">
+    <!-- Total Sales -->
+    <div class="stat-card sales-card">
+      <div class="stat-header">
+        <div class="stat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+        <div class="stat-trend positive">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>+12.5%</span>
+        </div>
+      </div>
+      <div class="stat-content">
+        <h3>Total Sales</h3>
+        <p class="stat-value">{{ totalSales | currency }}</p>
+        <p class="stat-subtitle">{{ totalTransactions }} transactions</p>
+      </div>
+    </div>
+
+    <!-- Revenue -->
+    <div class="stat-card revenue-card">
+      <div class="stat-header">
+        <div class="stat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+        <div class="stat-trend positive">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>+8.2%</span>
+        </div>
+      </div>
+      <div class="stat-content">
+        <h3>Net Revenue</h3>
+        <p class="stat-value">{{ netRevenue | currency }}</p>
+        <p class="stat-subtitle">After discounts & refunds</p>
+      </div>
+    </div>
+
+    <!-- Products Sold -->
+    <div class="stat-card products-card">
+      <div class="stat-header">
+        <div class="stat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+        <div class="stat-trend positive">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>+15.3%</span>
+        </div>
+      </div>
+      <div class="stat-content">
+        <h3>Products Sold</h3>
+        <p class="stat-value">{{ productsSold }}</p>
+      </div>
+    </div>
+
+    <!-- Average Transaction -->
+    <div class="stat-card avg-card">
+      <div class="stat-header">
+        <div class="stat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+        <div class="stat-trend negative">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>-2.1%</span>
+        </div>
+      </div>
+      <div class="stat-content">
+        <h3>Avg. Transaction</h3>
+        <p class="stat-value">{{ avgTransaction + "%" }}</p>
+        <p class="stat-subtitle">Per sale</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts and Analytics Section -->
+  <div class="charts-section">
+    <!-- Sales Chart -->
+    <div class="chart-card large">
+      <div class="chart-header">
+        <div>
+          <h3>Sales Overview</h3>
+          <p class="chart-subtitle">Daily sales performance</p>
+        </div>
+        <div class="chart-tabs">
+          <button
+            class="chart-tab"
+            [class.active]="salesChartType === 'revenue'"
+            (click)="setChartType('revenue')"
+          >
+            Revenue
+          </button>
+          <button
+            class="chart-tab"
+            [class.active]="salesChartType === 'transactions'"
+            (click)="setChartType('transactions')"
+          >
+            Transactions
+          </button>
+        </div>
+      </div>
+      <div class="chart-body">
+        <!-- Placeholder for chart - integrate Chart.js, ApexCharts, or ngx-charts -->
+        <div class="chart-placeholder">
+          <svg width="100%" height="300" viewBox="0 0 800 300">
+            <defs>
+              <linearGradient
+                id="chartGradient"
+                x1="0%"
+                y1="0%"
+                x2="0%"
+                y2="100%"
+              >
+                <stop
+                  offset="0%"
+                  style="stop-color: #3b82f6; stop-opacity: 0.3"
+                />
+                <stop
+                  offset="100%"
+                  style="stop-color: #3b82f6; stop-opacity: 0"
+                />
+              </linearGradient>
+            </defs>
+
+            <line
+              x1="0"
+              y1="60"
+              x2="800"
+              y2="60"
+              stroke="#e2e8f0"
+              stroke-width="1"
+            />
+            <line
+              x1="0"
+              y1="120"
+              x2="800"
+              y2="120"
+              stroke="#e2e8f0"
+              stroke-width="1"
+            />
+            <line
+              x1="0"
+              y1="180"
+              x2="800"
+              y2="180"
+              stroke="#e2e8f0"
+              stroke-width="1"
+            />
+            <line
+              x1="0"
+              y1="240"
+              x2="800"
+              y2="240"
+              stroke="#e2e8f0"
+              stroke-width="1"
+            />
+
+            <polyline
+              [attr.points]="chartAreaPoints"
+              fill="url(#chartGradient)"
+              stroke="none"
+            ></polyline>
+
+            <polyline
+              [attr.points]="chartLinePoints"
+              fill="none"
+              stroke="#3b82f6"
+              stroke-width="3"
+            ></polyline>
+
+            <circle
+              *ngFor="let dot of chartDots"
+              [attr.cx]="dot.x"
+              [attr.cy]="dot.y"
+              r="5"
+              fill="#3b82f6"
+            ></circle>
+          </svg>
+          <div class="chart-legend">
+            <span class="legend-item">
+              <span class="legend-dot" style="background: #3b82f6"></span>
+              This Period
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="chart-card medium">
+      <div class="chart-header">
+        <div>
+          <h3>Top Selling Products</h3>
+          <p class="chart-subtitle">Best performers this period</p>
+        </div>
+      </div>
+      <div class="chart-body">
+        <div class="top-products-list">
+          <div
+            class="product-item"
+            *ngFor="let product of topProducts; let i = index"
+          >
+            <div class="product-rank">{{ i + 1 }}</div>
+            <div class="product-info">
+              <img
+                [src]="product.image || 'assets/images/placeholder.png'"
+                [alt]="product.name"
+              />
+              <div class="product-details">
+                <h4>{{ product.name }}</h4>
+                <p>{{ product.soldQuantity }} units sold</p>
+              </div>
+            </div>
+            <div class="product-revenue">{{ product.revenue | currency }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Analytics -->
+  <div class="analytics-row">
+    <!-- Category Performance -->
+    <div class="analytics-card">
+      <div class="card-header">
+        <h3>Sales by Category</h3>
+        <button class="view-all-btn" (click)="viewAllCategories()">
+          View All
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="category-list">
+          <div class="category-item" *ngFor="let category of categoryStats">
+            <div class="category-info">
+              <span class="category-name">{{ category.name }}</span>
+              <span class="category-percentage"
+                >{{ category.percentage }}%</span
+              >
+            </div>
+            <div class="category-bar">
+              <div
+                class="category-fill"
+                [style.width.%]="category.percentage"
+                [style.background]="getCategoryColor(category)"
+              ></div>
+            </div>
+            <div class="category-amount">{{ category.amount | currency }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Methods -->
+    <!-- <div class="analytics-card">
+      <div class="card-header">
+        <h3>Payment Methods</h3>
+      </div>
+      <div class="card-body">
+        <div class="payment-stats">
+          <div class="payment-item" *ngFor="let method of paymentMethods">
+            <div class="payment-icon" [style.background]="method.color">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                  stroke="white"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <div class="payment-details">
+              <h4>{{ method.name }}</h4>
+              <p>{{ method.transactions }} transactions</p>
+            </div>
+            <div class="payment-amount">{{ method.amount | currency }}</div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- Stock Alerts -->
+    <div class="analytics-card alert-card">
+      <div class="card-header">
+        <h3>Stock Alerts</h3>
+        <span class="alert-badge">{{ stockAlerts.length }}</span>
+      </div>
+      <div class="card-body">
+        <div class="alert-list">
+          <div class="alert-item" *ngFor="let alert of stockAlerts">
+            <div class="alert-icon" [class.critical]="alert.quantity === 0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+            <div class="alert-details">
+              <h4>{{ alert.productName }}</h4>
+              <p *ngIf="alert.quantity === 0" class="out-of-stock">
+                Out of stock
+              </p>
+              <p *ngIf="alert.quantity > 0" class="low-stock">
+                Only {{ alert.quantity }} left (Min: {{ alert.minStock }})
+              </p>
+            </div>
+            <button class="restock-btn" (click)="restockProduct(alert)">
+              Restock
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity Section -->
+  <div class="activity-section">
+    <!-- Recent Transactions -->
+    <div class="activity-card">
+      <div class="card-header">
+        <h3>Recent Transactions</h3>
+        <a class="view-all-link" routerLink="/sales">View All</a>
+      </div>
+      <div class="card-body">
+        <div class="transaction-list">
+          <div
+            class="transaction-item"
+            *ngFor="let transaction of recentTransactions"
+          >
+            <div class="transaction-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+            <div class="transaction-details">
+              <h4>{{ transaction.invoiceNumber }}</h4>
+              <p>
+                {{ transaction.customerName || "Walk-in Customer" }} •
+                {{ transaction.items }} items
+              </p>
+            </div>
+            <div class="transaction-time">{{ transaction.time | date:'yyyy-MM-dd HH:mm' }}</div>
+            <div class="transaction-amount">
+              {{ transaction.amount | currency }}
+            </div>
+            <span
+              class="transaction-status"
+              [class.paid]="transaction.status === 'PAID'"
+              [class.pending]="transaction.status === 'PENDING'"
+            >
+              {{ transaction.status }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions-card">
+      <div class="card-header">
+        <h3>Quick Actions</h3>
+      </div>
+      <div class="card-body">
+        <div class="actions-grid">
+          <button class="action-btn" (click)="newSale()" routerLink="/create-sale">
+            <div class="action-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 4v16m8-8H4"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <span>New Sale</span>
+          </button>
+
+
+          <button class="action-btn" (click)="viewInventory()" routerLink="/products">
+            <div class="action-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+            <span>Inventory</span>
+          </button>
+
+          <button class="action-btn" (click)="generateReport()" routerLink="/sales-history">
+            <div class="action-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+            <span>Sales History</span>
+          </button>
+
+          <!-- <button class="action-btn" (click)="manageCustomers()">
+            <div class="action-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+            <span>Customers</span>
+          </button> -->
+
+          <button class="action-btn" (click)="viewSettings()">
+            <div class="action-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+                <path
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+            <span>Settings</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

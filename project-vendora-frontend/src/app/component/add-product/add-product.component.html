@@ -1,0 +1,482 @@
+<div class="add-product-container">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-left">
+      <button class="back-btn" (click)="goBack()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div>
+        <h1>{{ isEditMode ? 'Edit Product' : 'Add New Product' }}</h1>
+        <p class="subtitle">{{ isEditMode ? 'Update product information' : 'Create a new product in your inventory' }}</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+      <button class="btn btn-primary" (click)="saveProduct()" [disabled]="!isFormValid()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        {{ isEditMode ? 'Update Product' : 'Save Product' }}
+      </button>
+    </div>
+  </header>
+
+  <div class="form-container">
+    <!-- Form Sections -->
+    <div class="form-grid">
+      
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2>Basic Information</h2>
+        </div>
+
+        <div class="form-body">
+          <div class="form-row">
+            <div class="form-group required">
+              <label for="productName">Product Name</label>
+              <input 
+                type="text" 
+                id="productName" 
+                class="form-control"
+                [(ngModel)]="product.name"
+                placeholder="Enter product name"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label for="model">Model</label>
+              <input 
+                type="text" 
+                id="model" 
+                class="form-control"
+                [(ngModel)]="product.model"
+                placeholder="Enter model number or model name">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="sku">SKU</label>
+              <input 
+                type="text" 
+                id="sku" 
+                class="form-control"
+                [(ngModel)]="product.sku"
+                placeholder="Stock Keeping Unit">
+              <span class="form-hint">Leave empty to auto-generate</span>
+            </div>
+
+            <div class="form-group">
+              <label for="barcode">Barcode</label>
+              <input 
+                type="text" 
+                id="barcode" 
+                class="form-control"
+                [(ngModel)]="product.barcode"
+                placeholder="Enter barcode">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group required">
+              <label for="category">Category</label>
+              <select 
+                id="category" 
+                class="form-control"
+                [(ngModel)]="product.category"
+                required>
+                <option [ngValue]="null">Select category</option>
+                <option *ngFor="let category of categories" [ngValue]="category">
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group required">
+              <label for="unitType">Unit Type</label>
+              <select 
+                id="unitType" 
+                class="form-control"
+                [(ngModel)]="product.unitType"
+                required>
+                <option [ngValue]="null">Select unit type</option>
+                <option value="PIECE">Piece</option>
+                <option value="KG">Kilogram (KG)</option>
+                <option value="GRAM">Gram (G)</option>
+                <option value="LITER">Liter (L)</option>
+                <option value="ML">Milliliter (ML)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <h2>Pricing</h2>
+        </div>
+
+        <div class="form-body">
+          <div class="form-row">
+            <div class="form-group required">
+              <label for="price">Selling Price</label>
+              <div class="input-with-icon">
+                <span class="input-icon">$</span>
+                <input 
+                  type="number" 
+                  id="price" 
+                  class="form-control with-icon"
+                  [(ngModel)]="product.price"
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                  required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="costPrice">Cost Price</label>
+              <div class="input-with-icon">
+                <span class="input-icon">$</span>
+                <input 
+                  type="number" 
+                  id="costPrice" 
+                  class="form-control with-icon"
+                  [(ngModel)]="product.costPrice"
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0">
+              </div>
+            </div>
+          </div>
+
+          <div class="profit-margin-display" *ngIf="product.price && product.costPrice">
+            <div class="margin-info">
+              <span class="margin-label">Profit Margin:</span>
+              <span class="margin-value">{{ getProfitMargin() }}</span>
+            </div>
+            <div class="margin-bar">
+              <div class="margin-fill" [style.width.%]="getProfitPercentage()"></div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="product.isTaxable"
+                  class="checkbox-input">
+                <span class="checkbox-label">This product is taxable</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <h2>Inventory</h2>
+        </div>
+
+        <div class="form-body">
+          <div class="form-row">
+            <div class="form-group required">
+              <label for="quantity">Initial Stock Quantity</label>
+              <input 
+                type="number" 
+                id="quantity" 
+                class="form-control"
+                [(ngModel)]="inventory.quantity"
+                placeholder="0"
+                min="0"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label for="minStockLevel">Min Stock Level</label>
+              <input 
+                type="number" 
+                id="minStockLevel" 
+                class="form-control"
+                [(ngModel)]="inventory.minStockLevel"
+                placeholder="Enter minimum stock"
+                min="0">
+              <span class="form-hint">Alert when stock falls below this level</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="maxStockLevel">Max Stock Level</label>
+              <input 
+                type="number" 
+                id="maxStockLevel" 
+                class="form-control"
+                [(ngModel)]="inventory.maxStockLevel"
+                placeholder="Enter maximum stock"
+                min="0">
+            </div>
+
+            <div class="form-group">
+              <label for="lastRestocked">Last Restocked Date</label>
+              <input 
+                type="date" 
+                id="lastRestocked" 
+                class="form-control"
+                [(ngModel)]="inventory.lastRestocked">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pharmacy Information (Conditional) -->
+      <div class="form-section pharmacy-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <h2>Pharmacy Information</h2>
+          <label class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="showPharmacyFields">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="form-body" *ngIf="showPharmacyFields">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="genericName">Generic Name</label>
+              <input 
+                type="text" 
+                id="genericName" 
+                class="form-control"
+                [(ngModel)]="product.genericName"
+                placeholder="Enter generic name">
+            </div>
+
+            <div class="form-group">
+              <label for="manufacturer">Manufacturer</label>
+              <input 
+                type="text" 
+                id="manufacturer" 
+                class="form-control"
+                [(ngModel)]="product.manufacturer"
+                placeholder="Enter manufacturer name">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="batchNumber">Batch Number</label>
+              <input 
+                type="text" 
+                id="batchNumber" 
+                class="form-control"
+                [(ngModel)]="product.batchNumber"
+                placeholder="Enter batch number">
+            </div>
+
+            <div class="form-group">
+              <label for="expiryDate">Expiry Date</label>
+              <input 
+                type="date" 
+                id="expiryDate" 
+                class="form-control"
+                [(ngModel)]="product.expiryDate">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="product.requiresPrescription"
+                  class="checkbox-input">
+                <span class="checkbox-label">Requires Prescription</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Image Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <h2>Product Image</h2>
+        </div>
+
+        <div class="form-body">
+          <div class="image-upload-area">
+            <div class="image-preview" *ngIf="product.image">
+              <img [src]="product.image" alt="Product preview">
+              <button class="remove-image-btn" (click)="removeImage()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="upload-placeholder" *ngIf="!product.image">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              <p>Click to upload or drag and drop</p>
+              <span>PNG, JPG or WEBP (Max 5MB)</span>
+            </div>
+
+            <input 
+              type="file" 
+              #fileInput
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              class="file-input">
+            
+            <button class="btn btn-outline" (click)="fileInput.click()" *ngIf="!product.image">
+              Choose Image
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label for="imageUrl">Or enter image URL</label>
+            <input 
+              type="url" 
+              id="imageUrl" 
+              class="form-control"
+              [(ngModel)]="product.image"
+              placeholder="https://example.com/image.jpg">
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <h2>Status</h2>
+        </div>
+
+        <div class="form-body">
+          <div class="status-toggle">
+            <label class="toggle-label">
+              <span class="toggle-text">
+                <strong>{{ product.isActive ? 'Active' : 'Inactive' }}</strong>
+                <small>{{ product.isActive ? 'Product is visible and available for sale' : 'Product is hidden from sales' }}</small>
+              </span>
+              <label class="toggle-switch">
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="product.isActive">
+                <span class="toggle-slider"></span>
+              </label>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Summary Panel (Sticky) -->
+    <div class="summary-panel">
+      <div class="summary-sticky">
+        <h3>Product Summary</h3>
+        
+        <div class="summary-preview">
+          <div class="preview-image">
+            <img [src]="product.image || 'assets/images/placeholder.png'" alt="Product preview">
+          </div>
+          <div class="preview-details">
+            <h4>{{ product.name || 'Product Name' }}</h4>
+            <p class="preview-sku" *ngIf="product.sku">SKU: {{ product.sku }}</p>
+            <p class="preview-category" *ngIf="getCategoryName()">{{ getCategoryName() }}</p>
+          </div>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <div class="summary-item">
+          <span class="summary-label">Selling Price:</span>
+          <span class="summary-value price">{{ product.price || 0 | currency }}</span>
+        </div>
+
+        <div class="summary-item" *ngIf="product.costPrice">
+          <span class="summary-label">Cost Price:</span>
+          <span class="summary-value">{{ product.costPrice | currency }}</span>
+        </div>
+
+        <div class="summary-item" *ngIf="product.price && product.costPrice">
+          <span class="summary-label">Profit:</span>
+          <span class="summary-value profit">{{ getProfit() | currency }}</span>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <div class="summary-item">
+          <span class="summary-label">Initial Stock:</span>
+          <span class="summary-value">{{ inventory.quantity || 0 }} {{ product.unitType || 'units' }}</span>
+        </div>
+
+        <div class="summary-item" *ngIf="inventory.minStockLevel">
+          <span class="summary-label">Min Stock:</span>
+          <span class="summary-value">{{ inventory.minStockLevel }}</span>
+        </div>
+
+        <div class="summary-item" *ngIf="inventory.maxStockLevel">
+          <span class="summary-label">Max Stock:</span>
+          <span class="summary-value">{{ inventory.maxStockLevel }}</span>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <div class="summary-item">
+          <span class="summary-label">Status:</span>
+          <span class="status-badge" [class.active]="product.isActive" [class.inactive]="!product.isActive">
+            {{ product.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+
+        <div class="summary-actions">
+          <button class="btn btn-secondary btn-block" (click)="cancel()">Cancel</button>
+          <button class="btn btn-primary btn-block" (click)="saveProduct()" >
+            {{ isEditMode ? 'Update' : 'Save' }} Product
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

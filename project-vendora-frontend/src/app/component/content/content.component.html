@@ -10,11 +10,7 @@
 
     <!-- Navigation Menu -->
     <mat-nav-list class="nav-menu">
-      <mat-list-item
-        routerLink="/"
-        [routerLinkActive]="['active']"
-        [routerLinkActiveOptions]="{exact: true}"
-        class="nav-item">
+      <mat-list-item routerLink="/dashboard" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
         <div class="nav-item-content">
           <mat-icon class="nav-icon">dashboard</mat-icon>
           <span class="nav-label">Dashboard</span>
@@ -38,7 +34,7 @@
         </div>
       </mat-list-item>
 
-      <mat-list-item
+      <!-- <mat-list-item
         routerLink="/customers"
         [routerLinkActive]="['active']"
         class="nav-item">
@@ -46,7 +42,7 @@
           <mat-icon class="nav-icon">people</mat-icon>
           <span class="nav-label">Customers</span>
         </div>
-      </mat-list-item>
+      </mat-list-item> -->
 
       <mat-list-item
         routerLink="/sales-history"

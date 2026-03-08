@@ -1,5 +1,6 @@
 package com.vendora.vendorapos.repo;
 
+import com.vendora.vendorapos.entity.Business;
 import com.vendora.vendorapos.entity.Sale;
 import com.vendora.vendorapos.entity.enums.PaymentStatus;
 import com.vendora.vendorapos.entity.enums.SaleStatus;
@@ -12,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -34,4 +36,5 @@ public interface SaleRepo extends JpaRepository<Sale, Long> {
                            @Param("saleStatus") SaleStatus saleStatus,
                            @Param("paymentStatus") PaymentStatus paymentStatus,
                            Pageable pageable);
+    List<Sale> findAllByBusinessAndCreatedAtBetween(Business business, LocalDateTime startDate, LocalDateTime endDate);
 }

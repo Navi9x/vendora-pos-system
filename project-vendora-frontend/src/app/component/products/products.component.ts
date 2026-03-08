@@ -1,11 +1,31 @@
-import {Component, OnInit} from '@angular/core';
-import {UserService} from '../../service/user.service';
-import {CategoryDTO, InventoryResponseDTO} from '../../model/inventory';
-import {CurrencyPipe, DatePipe, NgForOf, NgIf, NgOptimizedImage} from '@angular/common';
-import {FormsModule} from '@angular/forms';
-import {Category} from '../../model/Category';
-import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
-import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/input';
+import { Component, OnInit } from '@angular/core';
+import { UserService } from '../../service/user.service';
+import {
+  InventoryRequestDTO,
+  InventoryResponseDTO,
+} from '../../model/inventory';
+import {
+  CurrencyPipe,
+  DatePipe,
+  NgForOf,
+  NgIf,
+  NgOptimizedImage,
+} from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Category } from '../../model/Category';
+import {
+  MatDatepicker,
+  MatDatepickerInput,
+  MatDatepickerToggle,
+} from '@angular/material/datepicker';
+import {
+  MatFormField,
+  MatInput,
+  MatLabel,
+  MatSuffix,
+} from '@angular/material/input';
+import { StockStatus } from '../../model/enum/StockStatus';
+import { Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-products',
@@ -22,14 +42,15 @@ import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/inp
     MatInput,
     MatLabel,
     MatSuffix,
-    MatFormField
+    MatFormField,
   ],
   templateUrl: './products.component.html',
-  styleUrl: './products.component.scss'
+  styleUrl: './products.component.scss',
 })
 export class ProductsComponent implements OnInit {
   inventoryItems: InventoryResponseDTO[] = [];
   categories: Category[] = [];
+  StockStatus = StockStatus;
 
   // Stats
   totalProducts: number = 0;
@@ -41,9 +62,9 @@ export class ProductsComponent implements OnInit {
   filters = {
     search: '',
     categoryId: null as number | null,
-    stockStatus: null as string | null,
+    stockStatus: null as StockStatus | null,
     isActive: null as boolean | null,
-    unitType: null as string | null
+    unitType: null as string | null,
   };
 
   // View mode
@@ -66,16 +87,28 @@ export class ProductsComponent implements OnInit {
   restockQuantity: number = 0;
   restockNotes: string = '';
 
-  constructor(public userService: UserService) {
-  }
+  constructor(public userService: UserService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadInventory();
     this.loadCategories();
   }
 
-  public loadInventory(){
-    this.userService.loadInventory().subscribe(inventory => {
+  public loadInventory() {
+    const filters: InventoryRequestDTO = {
+      page: this.currentPage - 1,
+      size: this.pageSize,
+      searchText: this.filters.search,
+      categoryId: this.filters.categoryId,
+      unitType: this.filters.unitType,
+      active: this.filters.isActive,
+      stockStatus: this.filters.stockStatus,
+      date: this.selectedDate
+        ? this.selectedDate.toISOString().split('T')[0]
+        : undefined,
+    };
+
+    this.userService.loadInventory(filters).subscribe((inventory) => {
       this.inventoryItems = inventory;
       this.totalRecords = inventory.length;
       this.calculateStats(inventory);
@@ -84,33 +117,32 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-
   loadCategories(): void {
-    this.userService.getAllCategories().subscribe(categories => {
+    this.userService.getAllCategories().subscribe((categories) => {
       this.categories = categories;
       console.log(categories);
-    })
+    });
   }
 
-  calculateStats(inventory:InventoryResponseDTO[]): void {
+  calculateStats(inventory: InventoryResponseDTO[]): void {
     this.totalProducts = inventory.length;
     this.inventoryValue = 0;
     this.lowStockCount = 0;
     this.outOfStockCount = 0;
 
-    inventory.forEach(item => {
-      const productCostPrice:number = item.product.costPrice??0;
-      this.inventoryValue+=(item.quantity*productCostPrice);
+    inventory.forEach((item) => {
+      const productCostPrice: number = item.product.costPrice ?? 0;
+      this.inventoryValue += item.quantity * productCostPrice;
 
       const minStock = item.minStockLevel ?? 0;
-      if(item.quantity<=minStock){
+      if (item.quantity <= minStock) {
         this.lowStockCount++;
       }
 
-      if(item.quantity===0){
+      if (item.quantity === 0) {
         this.outOfStockCount++;
       }
-    })
+    });
   }
 
   // Filter methods
@@ -125,7 +157,7 @@ export class ProductsComponent implements OnInit {
       categoryId: null,
       stockStatus: null,
       isActive: null,
-      unitType: null
+      unitType: null,
     };
     this.applyFilters();
   }
@@ -160,7 +192,7 @@ export class ProductsComponent implements OnInit {
     const price = item.product.price;
     const cost = item.product.costPrice || 0;
     const profit = price - cost;
-    const margin = cost > 0 ? ((profit / cost) * 100) : 0;
+    const margin = cost > 0 ? (profit / cost) * 100 : 0;
     return `${profit.toFixed(2)} (${margin.toFixed(1)}%)`;
   }
 
@@ -262,7 +294,7 @@ export class ProductsComponent implements OnInit {
     console.log('Restock:', {
       item: this.selectedItem,
       quantity: this.restockQuantity,
-      notes: this.restockNotes
+      notes: this.restockNotes,
     });
 
     this.closeRestockModal();
@@ -275,8 +307,7 @@ export class ProductsComponent implements OnInit {
   }
 
   onAddProduct(): void {
-    // TODO: Navigate to add product page or open add modal
-    console.log('Add new product');
+    this.router.navigate(['/inventory/add']);
   }
 
   onImport(): void {
@@ -293,5 +324,4 @@ export class ProductsComponent implements OnInit {
     // TODO: Print inventory report
     window.print();
   }
-
 }
