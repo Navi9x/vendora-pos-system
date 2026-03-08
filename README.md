@@ -61,7 +61,7 @@ Add and manage products with detailed information including pricing, inventory, 
 ## 🛠️ Tech Stack
 
 ### Backend
-- **Spring Boot 3.x** - Core framework
+- **Spring Boot 4.0.1** - Core framework
 - **Spring Security** - JWT authentication & authorization
 - **Spring Data JPA** - Database abstraction
 - **MySQL 8.x** - Primary database
@@ -73,10 +73,9 @@ Add and manage products with detailed information including pricing, inventory, 
 - **Maven** - Dependency management
 
 ### Frontend
-- **Angular 17.x** - Frontend framework
+- **Angular 19.2.19** - Frontend framework
 - **TypeScript** - Programming language
 - **Angular Material** - UI components
-- **RxJS** - Reactive programming
 - **SCSS** - Styling
 
 ### Architecture
@@ -109,8 +108,8 @@ Add and manage products with detailed information including pricing, inventory, 
 
 Before running this project, ensure you have:
 
-- **Java 17+** installed
-- **Node.js 18+** and npm installed
+- **Java 17** installed
+- **Node.js 20** and npm installed
 - **MySQL 8+** database server
 - **Maven 3.8+** for backend
 - **Angular CLI** for frontend
